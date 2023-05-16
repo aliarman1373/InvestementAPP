@@ -19,9 +19,10 @@ namespace InvestmentAppProd.Controllers
 
         private readonly IInvestmentService _service;
         private readonly IMapper _mapper;
-        public InvestmentController(IInvestmentService service)
+        public InvestmentController(IInvestmentService service, IMapper mapper)
         {
             this._service = service;
+            this._mapper = mapper;
         }
 
         [HttpGet]

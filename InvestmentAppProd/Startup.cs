@@ -1,19 +1,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using InvestmentAppProd.Core.Interfaces;
 using InvestmentAppProd.Infrastructure.Data;
+using InvestmentAppProd.Infrastructure.Repositories;
 
 namespace InvestmentAppProd
 {
@@ -32,6 +26,7 @@ namespace InvestmentAppProd
             //Using InMemoryDatabase, Database name set as "Investments".
             services.AddDbContext<DataContext>(options => options.UseInMemoryDatabase("Investments"));
             services.AddScoped<IInvestmentService, InvestmentService>();
+            services.AddScoped<IInvestmentRepository, InvestmentRepository>();
             services.AddAutoMapper(typeof(Startup));
             services.AddControllers();
             services.AddSwaggerGen(c =>

@@ -7,7 +7,7 @@ namespace InvestmentAppProd.Infrastructure.Data
     {
         public DbSet<Investment> Investments { get; set; }
 
-        public DataContext(DbContextOptions<DbContext> options) : base(options)
+        public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
         }
 
