@@ -5,8 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using InvestmentAppProd.Models;
-using InvestmentAppProd.Data;
+using InvestmentAppProd.Core.Interfaces;
 
 namespace InvestmentAppProd.Controllers
 {
@@ -14,11 +13,12 @@ namespace InvestmentAppProd.Controllers
     [ApiController]
     public class InvestmentController : Controller
     {
-        private readonly InvestmentDBContext _context;
 
-        public InvestmentController(InvestmentDBContext context)
+        private readonly IInvestmentService _service;
+
+        public InvestmentController(IInvestmentService service)
         {
-            _context = context;
+            this._service = service;
         }
 
         [HttpGet]
@@ -34,8 +34,8 @@ namespace InvestmentAppProd.Controllers
             }
         }
 
-        [HttpGet("name")]
-        public ActionResult<Investment> FetchInvestment([FromQuery] string name)
+        [HttpGet("id")]
+        public Task<ActionResult<Investment>> FetchInvestment([FromRoute] Guid id)
         {
             try
             {
