@@ -1,5 +1,4 @@
-﻿using InvestmentAppProd.Core.Interfaces;
-using InvestmentAppProd.Core.Models;
+﻿using InvestmentAppProd.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static InvestmentAppProd.Core.Enums.Enum;
 
-namespace InvestmentAppProd.Core.Services
+namespace InvestmentAppProd.Core.Interfaces
 {
     public class InvestmentService : IInvestmentService
     {
@@ -19,7 +18,7 @@ namespace InvestmentAppProd.Core.Services
             _repository = repository;
         }
 
-        public async Task<ICollection<Investment>> GetAllAsync()
+        public async Task<IEnumerable<Investment>> GetAllAsync()
         {
             try
             {
@@ -56,6 +55,7 @@ namespace InvestmentAppProd.Core.Services
         {
             try
             {
+                entity.Id = Guid.NewGuid();
                 await _repository.CreateAsync(entity);
             }
             catch (Exception)
@@ -108,10 +108,10 @@ namespace InvestmentAppProd.Core.Services
         {
             double rate = investment.InterestRate / 100;
             double time = CalculateTime(investment.StartDate);
-            if (investment.Type == InterestType.Simple)
-                return Math.Round(investment.PrincipalAmount * (1 + (rate * time)), 2);
+            if (investment.InterestType == InterestType.Simple)
+                return Math.Round(investment.PrincipalAmount * (1 + rate * time), 2);
             else
-                return Math.Round(investment.PrincipalAmount * Math.Pow((1 + (rate / numberOfCompoundingPeriod)), (numberOfCompoundingPeriod * time)), 2);
+                return Math.Round(investment.PrincipalAmount * Math.Pow(1 + rate / numberOfCompoundingPeriod, numberOfCompoundingPeriod * time), 2);
         }
 
         public double CalculateTime(DateTime startDate)

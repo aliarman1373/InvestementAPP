@@ -8,6 +8,7 @@ namespace InvestmentAppProd.Core.Interfaces
     public interface IInvestmentService
     {
         double CalculateInvestmentInterest(Investment investment, int numberOfCompoundingPeriod = 12);
+
         double CalculateTime(DateTime startDate);
         Task CreateAsync(Investment entity);
         Task<Investment> DeleteAsync(Guid id);

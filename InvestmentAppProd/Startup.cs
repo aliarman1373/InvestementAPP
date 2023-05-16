@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using InvestmentAppProd.Data;
 using InvestmentAppProd.Core.Interfaces;
 using InvestmentAppProd.Infrastructure.Data;
 
@@ -33,6 +32,7 @@ namespace InvestmentAppProd
             //Using InMemoryDatabase, Database name set as "Investments".
             services.AddDbContext<DataContext>(options => options.UseInMemoryDatabase("Investments"));
             services.AddScoped<IInvestmentService, InvestmentService>();
+            services.AddAutoMapper(typeof(Startup));
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

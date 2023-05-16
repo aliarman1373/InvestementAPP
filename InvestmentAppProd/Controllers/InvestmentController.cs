@@ -6,6 +6,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using InvestmentAppProd.Core.Interfaces;
+using InvestmentAppProd.Core.Models;
+using InvestmentAppProd.Models;
+using AutoMapper;
 
 namespace InvestmentAppProd.Controllers
 {
@@ -15,112 +18,44 @@ namespace InvestmentAppProd.Controllers
     {
 
         private readonly IInvestmentService _service;
-
+        private readonly IMapper _mapper;
         public InvestmentController(IInvestmentService service)
         {
             this._service = service;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Investment>> FetchInvestment()
+        public async Task<ActionResult<IEnumerable<Investment>>> GetInvestments()
         {
-            try
-            {
-                return Ok(_context.Investments.ToList());
-            }
-            catch (Exception e)
-            {
-                return NotFound(e.ToString());
-            }
+            return Ok(await _service.GetAllAsync());
         }
 
-        [HttpGet("id")]
-        public Task<ActionResult<Investment>> FetchInvestment([FromRoute] Guid id)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Investment>> GetInvestment([FromRoute] Guid id)
         {
-            try
-            {
-                var investment = _context.Investments.Find(name);
-                if (investment == null)
-                    return NotFound();
 
-                return Ok(investment);
-            }
-            catch (Exception e)
-            {
-                return NotFound(e.ToString());
-            }
+            return Ok(await _service.GetByIdAsync(id));
+
         }
-
 
         [HttpPost]
-        public ActionResult<Investment> AddInvestment([FromBody] Investment investment)
+        public async Task<ActionResult<Investment>> AddInvestment([FromBody] AddInvestmentModel model)
         {
-            try
-            {
-                if (investment.StartDate > DateTime.Now)
-                    return BadRequest("Investment Start Date cannot be in the future.");
-
-                investment.CalculateValue();
-                _context.ChangeTracker.Clear();
-                _context.Investments.Add(investment);
-                _context.SaveChanges();
-
-                return CreatedAtAction("AddInvestment", investment.Name, investment);
-            }
-            catch (DbUpdateException dbE)
-            {
-                return Conflict(dbE.ToString());
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.ToString());
-            }
+            await _service.CreateAsync(_mapper.Map<Investment>(model));
+            return CreatedAtAction("AddInvestment", model);
         }
 
-        [HttpPut("name")]
-        public ActionResult UpdateInvestment([FromQuery] string name, [FromBody] Investment investment)
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateInvestment([FromRoute] Guid id, [FromBody] Investment model)
         {
-            try
-            {
-                if (name != investment.Name)
-                    return BadRequest("Name does not match the Investment you are trying to update.");
-
-                if (investment.StartDate > DateTime.Now)
-                    return BadRequest("Investment Start Date cannot be in the future.");
-
-                investment.CalculateValue();
-                _context.ChangeTracker.Clear();
-                _context.Entry(investment).State = EntityState.Modified;
-                _context.SaveChanges();
-
-                return NoContent();
-            }
-            catch (Exception e)
-            {
-                return NotFound(e.ToString());
-            }
+            return Ok(await _service.UpdateAsync(model));
         }
 
-        [HttpDelete("name")]
-        public ActionResult DeleteInvestment([FromQuery] string name)
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteInvestment([FromRoute] Guid id)
         {
-            try
-            {
-                var investment = _context.Investments.Find(name);
-                if (investment == null)
-                {
-                    return NotFound();
-                }
-                _context.ChangeTracker.Clear();
-                _context.Investments.Remove(investment);
-                _context.SaveChanges();
-
-                return NoContent();
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.ToString());
-            }
+            await _service.DeleteAsync(id);
+            return NoContent();
 
         }
     }

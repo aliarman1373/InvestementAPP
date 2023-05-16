@@ -18,7 +18,7 @@ namespace InvestmentAppProd.Core.Models
 
         public DateTime StartDate { get; set; }
 
-        public InterestType Type { get; set; }
+        public InterestType InterestType { get; set; }
 
         public double InterestRate { get; set; }
 
